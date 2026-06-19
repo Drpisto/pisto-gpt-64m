@@ -1,0 +1,29 @@
+{
+    "model": {
+        "d_model": 720,
+        "nhead": 8,
+        "dim_feedforward": 2880,
+        "dropout": 0.1,
+        "transformer_layers": 10,
+        "max_len": 512
+    },
+    "training": {
+        "max_hours": 4.5,
+        "grad_accum": 2,
+        "max_steps": 200000,
+        "warmup_steps": 500,
+        "log_every": 20,
+        "eval_every": 200,
+        "lr": 3e-4,
+        "lr_min": 3e-5,
+        "batch_size": 16
+    },
+    "dataset": {
+        "name": "roneneldan/TinyStories",
+        "split": "train",
+        "max_docs": 200000,
+        "min_len": 50,
+        "train_split": 0.95
+    },
+    "save_dir": "../wights"
+}

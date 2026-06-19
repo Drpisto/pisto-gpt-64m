@@ -1,17 +1,38 @@
+import json
 import torch as th
 import torch.nn.functional as F
+from pathlib import Path
 from model import model as LLMModel
+
+# ── Load config ──────────────────────────────────────────────
+_HERE = Path(__file__).parent
+CONFIG_PATH = _HERE.parent / "configs" / "genert.json"
+
+with open(CONFIG_PATH) as f:
+    cfg = json.load(f)
+
+model_cfg = cfg["model"]
+gen_cfg   = cfg["generation"]
+weight_path_default = str((_HERE.parent / cfg["weight_path"]).resolve())
 
 device = "cuda" if th.cuda.is_available() else "cpu"
 
-_loaded_models = {}  
+_loaded_models = {}
 
 
-def load_model(weight_path):
+def load_model(weight_path=None):
+    weight_path = weight_path or weight_path_default
     if weight_path in _loaded_models:
         return _loaded_models[weight_path]
 
-    mdl = LLMModel(d_model=720, nhead=8, dim_feedforward=2880, dropout=0.0, transformer_layers=10, max_len=512).to(device)
+    mdl = LLMModel(
+        d_model=model_cfg["d_model"],
+        nhead=model_cfg["nhead"],
+        dim_feedforward=model_cfg["dim_feedforward"],
+        dropout=model_cfg["dropout"],
+        transformer_layers=model_cfg["transformer_layers"],
+        max_len=model_cfg["max_len"],
+    ).to(device)
     mdl.lm_head.weight = mdl.embed.weight
 
     ckpt = th.load(weight_path, map_location=device, weights_only=False)
@@ -23,8 +44,21 @@ def load_model(weight_path):
     return mdl
 
 
-def chat(prompt, weight_path="/home/katcho/Desktop/test/llm with pytorch training/test wights/instruct_best(1).pt",
-          max_new=100, temp=0.5, top_k=20, top_p=0.9, rep_pen=1.3):
+def chat(
+    prompt,
+    weight_path=None,
+    max_new=None,
+    temp=None,
+    top_k=None,
+    top_p=None,
+    rep_pen=None,
+):
+    # Fall back to config values if not provided
+    max_new  = max_new  if max_new  is not None else gen_cfg["max_new"]
+    temp     = temp     if temp     is not None else gen_cfg["temp"]
+    top_k    = top_k    if top_k    is not None else gen_cfg["top_k"]
+    top_p    = top_p    if top_p    is not None else gen_cfg["top_p"]
+    rep_pen  = rep_pen  if rep_pen  is not None else gen_cfg["rep_pen"]
 
     mdl = load_model(weight_path)
 
@@ -70,15 +104,14 @@ def chat(prompt, weight_path="/home/katcho/Desktop/test/llm with pytorch trainin
     return mdl.tokenizer.detokenize(generated).strip()
 
 
-# اختبر — مع path اختياري
-tests = [
-    
-     "Tell me a short story."
-    
-]
+# ── Quick test ────────────────────────────────────────────────
+if __name__ == "__main__":
+    tests = [
+        "Tell me a short story."
+    ]
 
-print("\n" + "=" * 50)
-for q in tests:
-    print(f"Q: {q}")
-    print(f"A: {chat(q)}")     
-    print("-" * 35)
+    print("\n" + "=" * 50)
+    for q in tests:
+        print(f"Q: {q}")
+        print(f"A: {chat(q)}")
+        print("-" * 35)
