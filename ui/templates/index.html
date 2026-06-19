@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pisto GPT 64M</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='config.css') }}">
+</head>
+<body>
+  <div class="app">
+    {% include 'sidebar.html' %}
+
+    <main class="main">
+      <div class="tab-content active" id="tab-chat">
+        {% include 'chat.html' %}
+      </div>
+
+      <div class="tab-content" id="tab-config">
+        {% include 'config.html' %}
+      </div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

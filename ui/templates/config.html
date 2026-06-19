@@ -1,0 +1,56 @@
+<div class="config-panel">
+  <h2 class="config-title">Generation Parameters</h2>
+  <p class="config-sub">Adjust how the model responds</p>
+
+  <div class="config-card">
+    <div class="cfg-group">
+      <div class="cfg-header">
+        <span class="cfg-label">Temperature</span>
+        <span class="cfg-val" id="tempVal">0.5</span>
+      </div>
+      <input type="range" id="temp" class="cfg-slider" min="0.1" max="1.5" step="0.1" value="0.5">
+      <span class="cfg-desc">Lower = focused, Higher = creative</span>
+    </div>
+
+    <div class="cfg-group">
+      <div class="cfg-header">
+        <span class="cfg-label">Top-K</span>
+        <span class="cfg-val" id="top_kVal">20</span>
+      </div>
+      <input type="range" id="top_k" class="cfg-slider" min="0" max="100" step="1" value="20">
+      <span class="cfg-desc">Limit to K most likely tokens (0 = off)</span>
+    </div>
+
+    <div class="cfg-group">
+      <div class="cfg-header">
+        <span class="cfg-label">Top-P (Nucleus)</span>
+        <span class="cfg-val" id="top_pVal">0.9</span>
+      </div>
+      <input type="range" id="top_p" class="cfg-slider" min="0.1" max="1.0" step="0.05" value="0.9">
+      <span class="cfg-desc">Cumulative probability threshold</span>
+    </div>
+
+    <div class="cfg-group">
+      <div class="cfg-header">
+        <span class="cfg-label">Max Tokens</span>
+        <span class="cfg-val" id="max_newVal">100</span>
+      </div>
+      <input type="range" id="max_new" class="cfg-slider" min="10" max="500" step="10" value="100">
+      <span class="cfg-desc">Maximum length of generated response</span>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <h3 class="card-title">Model Info</h3>
+    <div class="info-grid">
+      <div><span class="i-label">Architecture</span><span class="i-val">GPT Decoder</span></div>
+      <div><span class="i-label">Parameters</span><span class="i-val">64M</span></div>
+      <div><span class="i-label">Layers</span><span class="i-val">10</span></div>
+      <div><span class="i-label">Heads</span><span class="i-val">8</span></div>
+      <div><span class="i-label">d_model</span><span class="i-val">720</span></div>
+      <div><span class="i-label">Max length</span><span class="i-val">512</span></div>
+      <div><span class="i-label">Tokenizer</span><span class="i-val">Byte-Level</span></div>
+      <div><span class="i-label">Training</span><span class="i-val">TinyStories + Alpaca</span></div>
+    </div>
+  </div>
+</div>
