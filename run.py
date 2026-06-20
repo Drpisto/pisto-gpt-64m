@@ -1,0 +1,62 @@
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parent
+APP_SCRIPT = ROOT / "ui" / "app.py"
+PRETRAIN_SCRIPT = ROOT / "train" / "pretraining.py"
+FINE_TUNE_SCRIPT = ROOT / "train" / "train_instruct.py"
+
+
+def prompt_choice(title: str, options: dict[str, str]) -> str:
+    print(f"\n{title}")
+    for key, label in options.items():
+        print(f"  {key}) {label}")
+
+    while True:
+        choice = input("Choose an option: ").strip().lower()
+        if choice in options:
+            return choice
+        print("Invalid choice, try again.")
+
+
+def run_script(script_path: Path) -> int:
+    if not script_path.exists():
+        print(f"Missing script: {script_path}")
+        return 1
+
+    print(f"\nRunning: {script_path.relative_to(ROOT)}\n")
+    result = subprocess.run([sys.executable, str(script_path)])
+    return result.returncode
+
+
+def main() -> int:
+    choice = prompt_choice(
+        "Main menu",
+        {
+            "1": "Launch app.py",
+            "2": "Train",
+        },
+    )
+
+    if choice == "1":
+        return run_script(APP_SCRIPT)
+
+    train_choice = prompt_choice(
+        "Training mode",
+        {
+            "1": "Pretrain",
+            "2": "Fine tuning",
+        },
+    )
+
+    if train_choice == "1":
+        return run_script(PRETRAIN_SCRIPT)
+    return run_script(FINE_TUNE_SCRIPT)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
