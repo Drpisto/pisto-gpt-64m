@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -33,7 +34,30 @@ def run_script(script_path: Path) -> int:
     return result.returncode
 
 
-def main() -> int:
+def run_command(command: str | None, mode: str | None) -> int | None:
+    if command == "app":
+        return run_script(APP_SCRIPT)
+
+    if command == "train":
+        if mode == "pretrain":
+            return run_script(PRETRAIN_SCRIPT)
+        if mode in {"finetune", "fine-tune", "fine_tune"}:
+            return run_script(FINE_TUNE_SCRIPT)
+        raise SystemExit("Use: python run.py train pretrain|finetune")
+
+    return None
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(add_help=True)
+    parser.add_argument("command", nargs="?", choices=["app", "train"])
+    parser.add_argument("mode", nargs="?")
+    args = parser.parse_args(argv)
+
+    direct = run_command(args.command, args.mode)
+    if direct is not None:
+        return direct
+
     choice = prompt_choice(
         "Main menu",
         {

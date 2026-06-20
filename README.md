@@ -1,15 +1,13 @@
 # Pisto GPT 64M
 
- 64M-parameter decoder only GPT model trained on TinyStories and instruction tuned on Alpaca + manual data.
+This repo contains a 64M-parameter decoder-only GPT. It starts with TinyStories pretraining and then gets instruction-tuned on Alpaca plus a small manual dataset.
 
 ## Weights
 
-Download  instruction tuned weights from Hugging Face:
+If you just want to try the model, download the checkpoints from Hugging Face and place them in `wights/`:
 
-
-- **instruct_best.pt** (instruction-tuned) — [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
-
-Place them in the `wights/` directory.
+- `best.pt` for pretraining - [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/best.pt)
+- `instruct_best.pt` for fine tuning - [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
 
 ## Quick Start
 
@@ -18,12 +16,14 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Use the menu to:
+`run.py` keeps things simple:
 
-- `1` launch the web app
-- `2` train the model, then choose `1` for pretraining or `2` for fine tuning
+- `1` starts the web app
+- `2` opens the training menu
+  - `1` pretraining
+  - `2` fine tuning
 
-Open http://localhost:5000 after launching the app.
+Once the app is running, open `http://localhost:5000`.
 
 ## Docker
 
@@ -34,28 +34,25 @@ docker run -p 5000:5000 pisto-gpt
 
 ## Training
 
-From `run.py`, choose `2` for training, then:
-
-- `1` for pretraining
-- `2` for fine tuning
-
-Direct commands:
+If you prefer to run the scripts directly, use these:
 
 ### Pretraining
 
 ```bash
 python train/pretraining.py
 ```
-Downloads TinyStories, trains from scratch. Configure in `configs/train.json`.
 
-### Instruction Tuning
+This trains from scratch on TinyStories. The settings live in `configs/train.json`.
+
+### Fine Tuning
 
 ```bash
 python train/train_instruct.py
 ```
-Loads pretrained weights from `wights/best.pt`, fine tunes on Alpaca + manual Q&A. Configure in `configs/instruct.json`.
 
-Both scripts auto resume from checkpoints and support CPU/GPU.
+This loads `wights/best.pt` and fine-tunes on Alpaca plus the manual Q&A data. The settings live in `configs/instruct.json`.
+
+Both scripts resume from checkpoints automatically and work on CPU or GPU.
 
 ## Model
 
@@ -74,8 +71,8 @@ Both scripts auto resume from checkpoints and support CPU/GPU.
 ## Project Structure
 
 ```
-├── configs/          # Training & generation configs
-├── llm/              # Model definition & inference
+├── configs/          # Training and generation configs
+├── llm/              # Model definition and inference
 ├── train/            # Training scripts
 ├── ui/               # Flask web UI
 └── wights/           # Trained checkpoints
