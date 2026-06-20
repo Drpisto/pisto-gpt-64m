@@ -1,12 +1,12 @@
 # Pisto GPT 64M
 
-A from-scratch 64M-parameter decoder-only GPT model trained on TinyStories and instruction-tuned on Alpaca + manual data.
+ 64M-parameter decoder only GPT model trained on TinyStories and instruction tuned on Alpaca + manual data.
 
 ## Weights
 
-Download pretrained and instruction-tuned weights from Hugging Face:
+Download  instruction tuned weights from Hugging Face:
 
-- **best.pt** (pretrained) — [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/best.pt)
+
 - **instruct_best.pt** (instruction-tuned) — [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
 
 Place them in the `wights/` directory.
@@ -14,11 +14,16 @@ Place them in the `wights/` directory.
 ## Quick Start
 
 ```bash
-pip install flask torch
-python ui/app.py
+pip install -r requirements.txt
+python run.py
 ```
 
-Open http://localhost:5000
+Use the menu to:
+
+- `1` launch the web app
+- `2` train the model, then choose `1` for pretraining or `2` for fine tuning
+
+Open http://localhost:5000 after launching the app.
 
 ## Docker
 
@@ -29,10 +34,16 @@ docker run -p 5000:5000 pisto-gpt
 
 ## Training
 
+From `run.py`, choose `2` for training, then:
+
+- `1` for pretraining
+- `2` for fine tuning
+
+Direct commands:
+
 ### Pretraining
 
 ```bash
-pip install datasets
 python train/pretraining.py
 ```
 Downloads TinyStories, trains from scratch. Configure in `configs/train.json`.
@@ -42,9 +53,9 @@ Downloads TinyStories, trains from scratch. Configure in `configs/train.json`.
 ```bash
 python train/train_instruct.py
 ```
-Loads pretrained weights from `wights/best.pt`, fine-tunes on Alpaca + manual Q&A. Configure in `configs/instruct.json`.
+Loads pretrained weights from `wights/best.pt`, fine tunes on Alpaca + manual Q&A. Configure in `configs/instruct.json`.
 
-Both scripts auto-resume from checkpoints and support CPU/GPU.
+Both scripts auto resume from checkpoints and support CPU/GPU.
 
 ## Model
 
