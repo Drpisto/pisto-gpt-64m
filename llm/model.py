@@ -90,75 +90,8 @@ class model(nn.Module):
     def train_step_text(self, text: str, optimizer: th.optim.Optimizer) -> float:
         return self.train_step(self.encode(text), optimizer)
 
-    @th.no_grad()
-    def generate(
-        self,
-        input_text: str,
-        max_new_tokens: int = 50,
-        temperature: float = 0.8,
-        top_k: int = 40,
-        top_p: float = 0.95,
-    ) -> str:
-        """
-        توليد نص مع التحكم في العشوائية.
-
-        المعاملات:
-            temperature : قيمة أعلى = نص أكثر إبداعاً، قيمة أقل = نص أكثر تركيزاً
-                          القيم المقترحة: 0.5 (دقيق) .. 1.2 (إبداعي)
-            top_k       : خذ فقط أفضل k توكن احتمالاً (0 = معطَّل)
-            top_p       : nucleus sampling — خذ أصغر مجموعة احتمالها التراكمي >= top_p
-                          (1.0 = معطَّل)
-        """
-        self.eval()
-        input_ids = self.encode(input_text)
-        generated_tokens = []
-
-        for _ in range(max_new_tokens):
-            logits = self.forward(input_ids)
-            logits = logits[:, -1, :]  # آخر توكن فقط  [1, vocab_size]
-
-            # --- Temperature ---
-            if temperature != 1.0:
-                logits = logits / temperature
-
-            # --- Top-K ---
-            if top_k > 0:
-                k = min(top_k, logits.size(-1))
-                top_values, _ = th.topk(logits, k)
-                min_top = top_values[:, -1].unsqueeze(-1)
-                logits = logits.masked_fill(logits < min_top, float("-inf"))
-
-            # --- Top-P (Nucleus) ---
-            if top_p < 1.0:
-                sorted_logits, sorted_indices = th.sort(logits, descending=True)
-                cumulative_probs = th.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
-                # أزل التوكنات التي تتجاوز الحد التراكمي
-                sorted_indices_to_remove = cumulative_probs - F.softmax(sorted_logits, dim=-1) >= top_p
-                sorted_logits[sorted_indices_to_remove] = float("-inf")
-                logits = th.zeros_like(logits).scatter_(1, sorted_indices, sorted_logits)
-
-            # --- Sampling ---
-            probs = F.softmax(logits, dim=-1)
-            next_token_id = th.multinomial(probs, num_samples=1)  # [1, 1]
-
-            # توقف إذا وصلنا لتوكن النهاية
-            if next_token_id.item() == self.tokenizer.eos_id:
-                break
-
-            generated_tokens.append(next_token_id.item())
-            input_ids = th.cat([input_ids, next_token_id], dim=1)
-            
-            # Stop if we hit a user turn marker or end marker (avoid repeating conversation pattern)
-            if len(generated_tokens) >= 3:
-                recent_bytes = [t - self.tokenizer.byte_offset for t in generated_tokens[-5:] if self.tokenizer.byte_offset <= t < self.tokenizer.byte_offset + 256]
-                try:
-                    recent_text = bytes(recent_bytes).decode("utf-8", errors="ignore").lower()
-                    if "<|end|>" in recent_text or "<|user|>" in recent_text:
-                        break
-                except:
-                    pass
-
-        return self.decode(input_ids.squeeze(0).tolist())
+    
+    
 
     def save(self, path):
         th.save(self.state_dict(), path)
