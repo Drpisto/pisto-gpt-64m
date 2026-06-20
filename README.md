@@ -2,6 +2,15 @@
 
 A from-scratch 64M-parameter decoder-only GPT model trained on TinyStories and instruction-tuned on Alpaca + manual data.
 
+## Weights
+
+Download pretrained and instruction-tuned weights from Hugging Face:
+
+- **best.pt** (pretrained) — [Download](https://huggingface.co/Drpisto/pisto-gpt-64m/resolve/main/wights/best.pt)
+- **instruct_best.pt** (instruction-tuned) — [Download](https://huggingface.co/Drpisto/pisto-gpt-64m/resolve/main/wights/instruct_best.pt)
+
+Place them in the `wights/` directory.
+
 ## Quick Start
 
 ```bash
