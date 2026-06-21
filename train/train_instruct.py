@@ -11,6 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 # ── Load config ──────────────────────────────────────────────
 _HERE       = Path(__file__).parent
 CONFIG_PATH = _HERE.parent / "configs" / "instruct.json"
+CONFIG_DIR  = CONFIG_PATH.parent
 
 with open(CONFIG_PATH) as f:
     cfg = json.load(f)
@@ -18,8 +19,8 @@ with open(CONFIG_PATH) as f:
 model_cfg   = cfg["model"]
 train_cfg   = cfg["training"]
 dataset_cfg = cfg["dataset"]
-SAVE_DIR    = (_HERE.parent / cfg["save_dir"]).resolve()
-PRETRAINED  = (_HERE.parent / cfg["pretrained_weights"]).resolve()
+SAVE_DIR    = (CONFIG_DIR / cfg["save_dir"]).resolve()
+PRETRAINED  = (CONFIG_DIR / cfg["pretrained_weights"]).resolve()
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
 HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
@@ -59,7 +60,7 @@ from datasets import load_dataset
 
 PROMPT = "### Instruction:\n{instruction}\n\n### Response:\n{response}"
 
-MANUAL_DATA_PATH = (_HERE.parent / cfg["manual_data_path"]).resolve()
+MANUAL_DATA_PATH = (CONFIG_DIR / cfg["manual_data_path"]).resolve()
 
 # Load manual Q&A pairs from data folder
 with open(MANUAL_DATA_PATH) as f:

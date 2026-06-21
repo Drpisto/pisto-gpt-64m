@@ -11,6 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 # ── Load config ──────────────────────────────────────────────
 _HERE = Path(__file__).parent
 CONFIG_PATH = _HERE.parent / "configs" / "train.json"
+CONFIG_DIR = CONFIG_PATH.parent
 
 with open(CONFIG_PATH) as f:
     cfg = json.load(f)
@@ -18,7 +19,7 @@ with open(CONFIG_PATH) as f:
 model_cfg   = cfg["model"]
 train_cfg   = cfg["training"]
 dataset_cfg = cfg["dataset"]
-SAVE_DIR    = (_HERE.parent / cfg["save_dir"]).resolve()
+SAVE_DIR    = (CONFIG_DIR / cfg["save_dir"]).resolve()
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
 HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
