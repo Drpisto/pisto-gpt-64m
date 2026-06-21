@@ -1,7 +1,7 @@
 # ============================================================
 # Instruction Tuning — loads all settings from configs/instruct.json
 # ============================================================
-import sys, math, time, json, random
+import sys, os, math, time, json, random
 from pathlib import Path
 
 import torch as th
@@ -21,6 +21,7 @@ dataset_cfg = cfg["dataset"]
 SAVE_DIR    = (_HERE.parent / cfg["save_dir"]).resolve()
 PRETRAINED  = (_HERE.parent / cfg["pretrained_weights"]).resolve()
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
+HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
 # ── Model import ─────────────────────────────────────────────
 sys.path.insert(0, str(_HERE.parent / "llm"))
@@ -67,7 +68,13 @@ print(f"Loaded {len(manual_data)} manual Q&A pairs from {MANUAL_DATA_PATH}")
 
 # Alpaca dataset (filtered)
 print(f"Loading {dataset_cfg['alpaca_name']}...")
-ds = load_dataset(dataset_cfg["alpaca_name"], split=dataset_cfg["alpaca_split"])
+load_kwargs = {
+    "path": dataset_cfg["alpaca_name"],
+    "split": dataset_cfg["alpaca_split"],
+}
+if HF_TOKEN:
+    load_kwargs["token"] = HF_TOKEN
+ds = load_dataset(**load_kwargs)
 alpaca = [
     (s["instruction"], s["output"])
     for s in ds
@@ -117,9 +124,9 @@ train_ds = InstructDataset(all_data[:split], tokenizer, seq_len=seq_len)
 eval_ds  = InstructDataset(all_data[split:], tokenizer, seq_len=seq_len)
 
 train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
-                          num_workers=2, pin_memory=True, drop_last=True)
+                          num_workers=2, pin_memory=th.cuda.is_available(), drop_last=True)
 eval_loader  = DataLoader(eval_ds,  batch_size=batch_size, shuffle=False,
-                          num_workers=2, pin_memory=True, drop_last=True)
+                          num_workers=2, pin_memory=th.cuda.is_available(), drop_last=True)
 print("Dataset ready ✓")
 
 # ── Training settings ────────────────────────────────────────
@@ -147,7 +154,7 @@ optimizer = th.optim.AdamW([
     {"params": no_decay, "weight_decay": 0.0},
 ], lr=LR, betas=(0.9, 0.95), fused=th.cuda.is_available())
 
-scaler = th.cuda.amp.GradScaler(enabled=th.cuda.is_available())
+scaler = th.amp.GradScaler("cuda", enabled=th.cuda.is_available())
 
 def get_lr(step):
     if step < WARMUP_STEPS:
@@ -165,7 +172,7 @@ def evaluate(n=30):
             break
         x = batch[:, :-1].to(device)
         y = batch[:, 1:].to(device)
-        with th.cuda.amp.autocast(enabled=th.cuda.is_available()):
+        with th.amp.autocast("cuda", enabled=th.cuda.is_available()):
             loss = F.cross_entropy(
                 mdl(x).reshape(-1, mdl.vocab_size),
                 y.reshape(-1),
@@ -229,7 +236,7 @@ while step < MAX_STEPS:
         for _ in range(GRAD_ACCUM):
             x = batch[:, :-1].to(device, non_blocking=True)
             y = batch[:, 1:].to(device, non_blocking=True)
-            with th.cuda.amp.autocast(enabled=th.cuda.is_available()):
+            with th.amp.autocast("cuda", enabled=th.cuda.is_available()):
                 loss = F.cross_entropy(
                     mdl(x).reshape(-1, mdl.vocab_size),
                     y.reshape(-1),

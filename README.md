@@ -9,6 +9,8 @@ If you just want to try the model, download the checkpoints from Hugging Face an
 - `best.pt` for pretraining: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/best.pt)
 - `instruct_best.pt` for fine tuning: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
 
+If Hugging Face warns about unauthenticated downloads, export `HF_TOKEN` before you start training.
+
 ## Quick Start
 
 ```bash

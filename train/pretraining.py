@@ -20,6 +20,7 @@ train_cfg   = cfg["training"]
 dataset_cfg = cfg["dataset"]
 SAVE_DIR    = (_HERE.parent / cfg["save_dir"]).resolve()
 SAVE_DIR.mkdir(parents=True, exist_ok=True)
+HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
 # ── Model path ───────────────────────────────────────────────
 sys.path.insert(0, str(_HERE.parent / "llm"))
@@ -75,7 +76,14 @@ class TextDataset(Dataset):
 tokenizer = ByteTokenizer()
 
 print(f"Loading {dataset_cfg['name']}...")
-ds = load_dataset(dataset_cfg["name"], split=dataset_cfg["split"], streaming=True)
+load_kwargs = {
+    "path": dataset_cfg["name"],
+    "split": dataset_cfg["split"],
+    "streaming": True,
+}
+if HF_TOKEN:
+    load_kwargs["token"] = HF_TOKEN
+ds = load_dataset(**load_kwargs)
 
 texts = []
 for i, s in enumerate(ds):
@@ -97,9 +105,9 @@ train_ds = TextDataset(texts[:split], tokenizer, seq_len=seq_len)
 eval_ds  = TextDataset(texts[split:], tokenizer, seq_len=seq_len)
 
 train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
-                          num_workers=2, pin_memory=True, drop_last=True)
+                          num_workers=2, pin_memory=th.cuda.is_available(), drop_last=True)
 eval_loader  = DataLoader(eval_ds,  batch_size=batch_size, shuffle=False,
-                          num_workers=2, pin_memory=True, drop_last=True)
+                          num_workers=2, pin_memory=th.cuda.is_available(), drop_last=True)
 
 print("Dataset ready ✓")
 
@@ -128,7 +136,7 @@ optimizer = th.optim.AdamW([
     {"params": no_decay, "weight_decay": 0.0},
 ], lr=LR, betas=(0.9, 0.95), fused=th.cuda.is_available())
 
-scaler = th.cuda.amp.GradScaler(enabled=th.cuda.is_available())
+scaler = th.amp.GradScaler("cuda", enabled=th.cuda.is_available())
 
 def get_lr(step):
     if step < WARMUP_STEPS:
@@ -146,7 +154,7 @@ def evaluate(n=30):
             break
         x = batch[:, :-1].to(device)
         y = batch[:, 1:].to(device)
-        with th.cuda.amp.autocast(enabled=th.cuda.is_available()):
+        with th.amp.autocast("cuda", enabled=th.cuda.is_available()):
             loss = F.cross_entropy(
                 mdl(x).reshape(-1, mdl.vocab_size),
                 y.reshape(-1),
@@ -212,7 +220,7 @@ while step < MAX_STEPS:
         for _ in range(GRAD_ACCUM):
             x = batch[:, :-1].to(device, non_blocking=True)
             y = batch[:, 1:].to(device, non_blocking=True)
-            with th.cuda.amp.autocast(enabled=th.cuda.is_available()):
+            with th.amp.autocast("cuda", enabled=th.cuda.is_available()):
                 loss = F.cross_entropy(
                     mdl(x).reshape(-1, mdl.vocab_size),
                     y.reshape(-1),
