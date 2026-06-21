@@ -1,13 +1,13 @@
 # Pisto GPT 64M
 
-This repo contains a 64M-parameter decoder-only GPT. It starts with TinyStories pretraining and then gets instruction-tuned on Alpaca plus a small manual dataset.
+This repo contains a 64M parameter decoder only GPT. It starts with TinyStories pretraining and then gets instruction tuned on Alpaca plus a small manual dataset.
 
 ## Weights
 
 If you just want to try the model, download the checkpoints from Hugging Face and place them in `wights/`:
 
-- `best.pt` for pretraining - [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/best.pt)
-- `instruct_best.pt` for fine tuning - [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
+- `best.pt` for pretraining: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/best.pt)
+- `instruct_best.pt` for fine tuning: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
 
 ## Quick Start
 
