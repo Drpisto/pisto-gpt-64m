@@ -8,22 +8,20 @@ class ByteTokenizer:
     pad_id = 0
     bos_id = 1
     eos_id = 2
-    byte_offset = 3  # bytes 0..255 map to 3..258
-    vocab_size = 259
+    _offset = 3
+
+    def __init__(self):
+        from transformers import GPT2Tokenizer
+        self._tok = GPT2Tokenizer.from_pretrained("gpt2")
+        self.vocab_size = self._tok.vocab_size + self._offset
 
     def tokenize(self, text: str) -> list[int]:
-        data = text.encode("utf-8", errors="replace")
-        return [self.bos_id] + [b + self.byte_offset for b in data] + [self.eos_id]
+        ids = self._tok.encode(text)
+        return [self.bos_id] + [i + self._offset for i in ids] + [self.eos_id]
 
     def detokenize(self, token_ids: list[int]) -> str:
-        bytes_out: list[int] = []
-        for token_id in token_ids:
-            if token_id in (self.pad_id, self.bos_id, self.eos_id):
-                continue
-            byte_val = token_id - self.byte_offset
-            if 0 <= byte_val <= 255:
-                bytes_out.append(byte_val)
-        return bytes(bytes_out).decode("utf-8", errors="replace")
+        ids = [t - self._offset for t in token_ids if t >= self._offset]
+        return self._tok.decode(ids)
 
 
 class model(nn.Module):
