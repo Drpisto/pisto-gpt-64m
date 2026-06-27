@@ -6,7 +6,7 @@ _HERE = Path(__file__).resolve().parent
 _PROJ = _HERE.parent
 sys.path.insert(0, str(_PROJ / "llm"))
 
-from tokenizers import Tokenizer, models, trainers
+from tokenizers import Tokenizer, models, trainers, pre_tokenizers
 
 
 def main():
@@ -24,6 +24,7 @@ def main():
 
     print(f"Training BPE (vocab=8192) on {len(texts):,} stories...")
     tok = Tokenizer(models.BPE(unk_token="<|endoftext|>"))
+    tok.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
     tok.train_from_iterator(texts, trainers.BpeTrainer(
         vocab_size=8192,
         special_tokens=["<pad>", "<bos>", "<eos>", "<|endoftext|>"],
