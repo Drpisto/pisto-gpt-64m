@@ -1,6 +1,7 @@
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
+from pathlib import Path
 from transformer import transformer
 
 
@@ -8,19 +9,19 @@ class ByteTokenizer:
     pad_id = 0
     bos_id = 1
     eos_id = 2
-    _offset = 3
 
-    def __init__(self):
-        from transformers import GPT2Tokenizer
-        self._tok = GPT2Tokenizer.from_pretrained("gpt2")
-        self.vocab_size = self._tok.vocab_size + self._offset
+    def __init__(self, path=None):
+        if path is None:
+            path = str(Path(__file__).parent.parent / "configs" / "bpe_tokenizer.json")
+        from tokenizers import Tokenizer
+        self._tok = Tokenizer.from_file(path)
+        self.vocab_size = self._tok.get_vocab_size()
 
     def tokenize(self, text: str) -> list[int]:
-        ids = self._tok.encode(text)
-        return [self.bos_id] + [i + self._offset for i in ids] + [self.eos_id]
+        return [self.bos_id] + self._tok.encode(text).ids + [self.eos_id]
 
     def detokenize(self, token_ids: list[int]) -> str:
-        ids = [t - self._offset for t in token_ids if t >= self._offset]
+        ids = [t for t in token_ids if t not in (self.pad_id, self.bos_id, self.eos_id)]
         return self._tok.decode(ids)
 
 
