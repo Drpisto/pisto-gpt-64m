@@ -12,7 +12,10 @@ class ByteTokenizer:
 
     def __init__(self, path=None):
         if path is None:
-            path = str(Path(__file__).parent.parent / "configs" / "bpe_tokenizer.json")
+            root = Path(__file__).parent.parent
+            candidates = [root / "wights" / "bpe_tokenizer.json",
+                          root / "configs" / "bpe_tokenizer.json"]
+            path = str(next((p for p in candidates if p.exists()), candidates[-1]))
         from tokenizers import Tokenizer
         self._tok = Tokenizer.from_file(path)
         self.vocab_size = self._tok.get_vocab_size()

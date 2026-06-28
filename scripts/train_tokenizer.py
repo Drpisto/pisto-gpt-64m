@@ -31,9 +31,13 @@ def main():
         show_progress=True,
     ))
 
-    path = str(_PROJ / "configs" / "bpe_tokenizer.json")
-    tok.save(path)
-    print(f"Saved → {path}")
+    paths = [
+        str(_PROJ / "configs" / "bpe_tokenizer.json"),
+        str(_PROJ / "wights" / "bpe_tokenizer.json"),
+    ]
+    for p in paths:
+        tok.save(p)
+        print(f"Saved → {p}")
     print(f"Vocab: {tok.get_vocab_size()}")
 
     # Verify
