@@ -2,7 +2,7 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 from pathlib import Path
-from transformer import transformer
+from transformer import Transformer
 
 
 class ByteTokenizer:
@@ -13,7 +13,7 @@ class ByteTokenizer:
     def __init__(self, path=None):
         if path is None:
             root = Path(__file__).parent.parent
-            candidates = [root / "wights" / "bpe_tokenizer.json",
+            candidates = [root / "weights" / "bpe_tokenizer.json",
                           root / "configs" / "bpe_tokenizer.json"]
             path = str(next((p for p in candidates if p.exists()), candidates[-1]))
         from tokenizers import Tokenizer
@@ -28,7 +28,7 @@ class ByteTokenizer:
         return self._tok.decode(ids)
 
 
-class model(nn.Module):
+class Model(nn.Module):
     def __init__(
         self,
         d_model=512,
@@ -47,7 +47,7 @@ class model(nn.Module):
         self.embed = nn.Embedding(self.vocab_size, d_model, padding_idx=self.tokenizer.pad_id)
         self.pos_embed = nn.Embedding(max_len, d_model)
         self.transformers = nn.ModuleList(
-            [transformer(d_model, nhead, dim_feedforward, dropout) for _ in range(transformer_layers)]
+            [Transformer(d_model, nhead, dim_feedforward, dropout) for _ in range(transformer_layers)]
         )
         self.lm_head = nn.Linear(d_model, self.vocab_size, bias=False)
 
@@ -84,16 +84,12 @@ class model(nn.Module):
         optimizer.zero_grad(set_to_none=True)
         loss = self.loss(input_ids)
         loss.backward()
-        # تقليص التدرج لتجنب انفجاره
         th.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
         optimizer.step()
         return float(loss.detach().item())
 
     def train_step_text(self, text: str, optimizer: th.optim.Optimizer) -> float:
         return self.train_step(self.encode(text), optimizer)
-
-    
-    
 
     def save(self, path):
         th.save(self.state_dict(), path)

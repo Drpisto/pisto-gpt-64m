@@ -25,5 +25,5 @@
         "min_len": 50,
         "train_split": 0.95
     },
-    "save_dir": "../wights"
+    "save_dir": "../weights"
 }

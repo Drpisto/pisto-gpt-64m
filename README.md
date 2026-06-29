@@ -4,10 +4,10 @@ This repo contains a 64M parameter decoder only GPT. It starts with TinyStories 
 
 ## Weights
 
-If you just want to try the model, download the checkpoints from Hugging Face and place them in `wights/`:
+If you just want to try the model, download the checkpoints from Hugging Face and place them in `weights/`:
 
-- `best.pt` for pretraining: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/best.pt)
-- `instruct_best.pt` for fine tuning: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/wights/instruct_best.pt)
+- `best.pt` for pretraining: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/weights/best.pt)
+- `instruct_best.pt` for fine tuning: [Download](https://huggingface.co/notpisto/pisto_gpt/resolve/main/weights/instruct_best.pt)
 
 If Hugging Face warns about unauthenticated downloads, export `HF_TOKEN` before you start training.
 
@@ -52,7 +52,7 @@ This trains from scratch on TinyStories. The settings live in `configs/train.jso
 python train/train_instruct.py
 ```
 
-This loads `wights/best.pt` and fine-tunes on Alpaca plus the manual Q&A data. The settings live in `configs/instruct.json`.
+This loads `weights/best.pt` and fine-tunes on Alpaca plus the manual Q&A data. The settings live in `configs/instruct.json`.
 
 Both scripts resume from checkpoints automatically and work on CPU or GPU.
 
@@ -77,5 +77,5 @@ Both scripts resume from checkpoints automatically and work on CPU or GPU.
 ├── llm/              # Model definition and inference
 ├── train/            # Training scripts
 ├── ui/               # Flask web UI
-└── wights/           # Trained checkpoints
+└── weights/           # Trained checkpoints
 ```

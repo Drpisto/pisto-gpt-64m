@@ -2,11 +2,11 @@ import json
 import torch as th
 import torch.nn.functional as F
 from pathlib import Path
-from model import model as LLMModel
+from model import Model
 
 # ── Load config ──────────────────────────────────────────────
 _HERE = Path(__file__).parent
-CONFIG_PATH = _HERE.parent / "configs" / "genert.json"
+CONFIG_PATH = _HERE.parent / "configs" / "generate.json"
 
 with open(CONFIG_PATH) as f:
     cfg = json.load(f)
@@ -25,7 +25,7 @@ def load_model(weight_path=None):
     if weight_path in _loaded_models:
         return _loaded_models[weight_path]
 
-    mdl = LLMModel(
+    mdl = Model(
         d_model=model_cfg["d_model"],
         nhead=model_cfg["nhead"],
         dim_feedforward=model_cfg["dim_feedforward"],

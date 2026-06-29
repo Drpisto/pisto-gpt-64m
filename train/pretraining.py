@@ -25,7 +25,7 @@ HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
 # ── Model path ───────────────────────────────────────────────
 sys.path.insert(0, str(_HERE.parent / "llm"))
-from model import model as LLMModel, ByteTokenizer
+from model import Model as LLMModel, ByteTokenizer
 
 device = th.device("cuda" if th.cuda.is_available() else "cpu")
 print(f"Device : {device}")

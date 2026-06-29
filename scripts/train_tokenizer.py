@@ -33,7 +33,7 @@ def main():
 
     paths = [
         str(_PROJ / "configs" / "bpe_tokenizer.json"),
-        str(_PROJ / "wights" / "bpe_tokenizer.json"),
+        str(_PROJ / "weights" / "bpe_tokenizer.json"),
     ]
     for p in paths:
         tok.save(p)
@@ -42,7 +42,7 @@ def main():
 
     # Verify
     from model import ByteTokenizer
-    t = ByteTokenizer(path)
+    t = ByteTokenizer(paths[-1])
     ids = t.tokenize("Hello! This is a test.")
     back = t.detokenize(ids)
     print(f"Test: {back} ({len(ids)} tokens, vocab={t.vocab_size})")
