@@ -18,7 +18,7 @@
         "lr_min": 5e-6,
         "batch_size": 8
     },
-    "manual_data_path": "../train/data/manual_data.json",
+    "manual_data_path": "../data/manual_data.json",
     "dataset": {
         "alpaca_name": "tatsu-lab/alpaca",
         "alpaca_split": "train",

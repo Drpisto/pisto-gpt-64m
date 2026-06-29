@@ -1,4 +1,4 @@
-"""Train a BPE tokenizer (vocab=8192) on TinyStories → configs/bpe_tokenizer.json"""
+"""Train a BPE tokenizer (vocab=8192) on TinyStories → config/bpe_tokenizer.json"""
 import sys
 from pathlib import Path
 
@@ -32,7 +32,7 @@ def main():
     ))
 
     paths = [
-        str(_PROJ / "configs" / "bpe_tokenizer.json"),
+        str(_PROJ / "config" / "bpe_tokenizer.json"),
         str(_PROJ / "weights" / "bpe_tokenizer.json"),
     ]
     for p in paths:
@@ -41,7 +41,7 @@ def main():
     print(f"Vocab: {tok.get_vocab_size()}")
 
     # Verify
-    from model import ByteTokenizer
+    from tokenizer import ByteTokenizer
     t = ByteTokenizer(paths[-1])
     ids = t.tokenize("Hello! This is a test.")
     back = t.detokenize(ids)

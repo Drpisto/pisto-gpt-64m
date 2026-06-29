@@ -1,5 +1,5 @@
 # ============================================================
-# Instruction Tuning — loads all settings from configs/instruct.json
+# Instruction Tuning — loads all settings from config/instruct.json
 # ============================================================
 import sys, os, math, time, json, random
 from pathlib import Path
@@ -10,7 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 
 # ── Load config ──────────────────────────────────────────────
 _HERE       = Path(__file__).parent
-CONFIG_PATH = _HERE.parent / "configs" / "instruct.json"
+CONFIG_PATH = _HERE.parent / "config" / "instruct.json"
 CONFIG_DIR  = CONFIG_PATH.parent
 
 with open(CONFIG_PATH) as f:
@@ -26,7 +26,8 @@ HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
 # ── Model import ─────────────────────────────────────────────
 sys.path.insert(0, str(_HERE.parent / "llm"))
-from model import Model as LLMModel, ByteTokenizer
+from model import Model as LLMModel
+from tokenizer import ByteTokenizer
 
 device = th.device("cuda" if th.cuda.is_available() else "cpu")
 print(f"Device : {device}")

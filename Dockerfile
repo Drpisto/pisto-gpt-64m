@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python", "run.py", "app"]
+CMD ["python", "cli.py", "app"]

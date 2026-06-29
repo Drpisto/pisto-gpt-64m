@@ -8,8 +8,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 APP_SCRIPT = ROOT / "ui" / "app.py"
-PRETRAIN_SCRIPT = ROOT / "train" / "pretraining.py"
-FINE_TUNE_SCRIPT = ROOT / "train" / "train_instruct.py"
+PRETRAIN_SCRIPT = ROOT / "training" / "pretrain.py"
+FINE_TUNE_SCRIPT = ROOT / "training" / "finetune.py"
 
 
 def prompt_choice(title: str, options: dict[str, str]) -> str:
@@ -43,7 +43,7 @@ def run_command(command: str | None, mode: str | None) -> int | None:
             return run_script(PRETRAIN_SCRIPT)
         if mode in {"finetune", "fine-tune", "fine_tune"}:
             return run_script(FINE_TUNE_SCRIPT)
-        raise SystemExit("Use: python run.py train pretrain|finetune")
+        raise SystemExit("Use: python cli.py train pretrain|finetune")
 
     return None
 

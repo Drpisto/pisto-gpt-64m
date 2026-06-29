@@ -15,10 +15,10 @@ If Hugging Face warns about unauthenticated downloads, export `HF_TOKEN` before 
 
 ```bash
 pip install -r requirements.txt
-python run.py
+python cli.py
 ```
 
-`run.py` keeps things simple:
+`cli.py` keeps things simple:
 
 - `1` starts the web app
 - `2` opens the training menu
@@ -41,18 +41,18 @@ If you prefer to run the scripts directly, use these:
 ### Pretraining
 
 ```bash
-python train/pretraining.py
+python training/pretrain.py
 ```
 
-This trains from scratch on TinyStories. The settings live in `configs/train.json`.
+This trains from scratch on TinyStories. The settings live in `config/train.json`.
 
 ### Fine Tuning
 
 ```bash
-python train/train_instruct.py
+python training/finetune.py
 ```
 
-This loads `weights/best.pt` and fine-tunes on Alpaca plus the manual Q&A data. The settings live in `configs/instruct.json`.
+This loads `weights/best.pt` and fine-tunes on Alpaca plus the manual Q&A data. The settings live in `config/instruct.json`.
 
 Both scripts resume from checkpoints automatically and work on CPU or GPU.
 
@@ -73,9 +73,11 @@ Both scripts resume from checkpoints automatically and work on CPU or GPU.
 ## Project Structure
 
 ```
-├── configs/          # Training and generation configs
-├── llm/              # Model definition and inference
-├── train/            # Training scripts
-├── ui/               # Flask web UI
+├── cli.py             # CLI entry point
+├── config/            # Training and generation configs
+├── data/              # Training data
+├── llm/               # Model definition and inference
+├── training/          # Training scripts
+├── ui/                # Flask web UI
 └── weights/           # Trained checkpoints
 ```

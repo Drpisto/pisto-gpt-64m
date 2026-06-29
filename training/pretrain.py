@@ -1,5 +1,5 @@
 # ============================================================
-# Pretraining — loads all settings from configs/train.json
+# Pretraining — loads all settings from config/train.json
 # ============================================================
 import sys, os, math, time, json, random
 from pathlib import Path
@@ -10,7 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 
 # ── Load config ──────────────────────────────────────────────
 _HERE = Path(__file__).parent
-CONFIG_PATH = _HERE.parent / "configs" / "train.json"
+CONFIG_PATH = _HERE.parent / "config" / "train.json"
 CONFIG_DIR = CONFIG_PATH.parent
 
 with open(CONFIG_PATH) as f:
@@ -25,7 +25,8 @@ HF_TOKEN    = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
 # ── Model path ───────────────────────────────────────────────
 sys.path.insert(0, str(_HERE.parent / "llm"))
-from model import Model as LLMModel, ByteTokenizer
+from model import Model as LLMModel
+from tokenizer import ByteTokenizer
 
 device = th.device("cuda" if th.cuda.is_available() else "cpu")
 print(f"Device : {device}")

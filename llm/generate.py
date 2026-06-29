@@ -6,7 +6,7 @@ from model import Model
 
 # ── Load config ──────────────────────────────────────────────
 _HERE = Path(__file__).parent
-CONFIG_PATH = _HERE.parent / "configs" / "generate.json"
+CONFIG_PATH = _HERE.parent / "config" / "generate.json"
 
 with open(CONFIG_PATH) as f:
     cfg = json.load(f)
@@ -82,12 +82,12 @@ def chat(
 
             if top_k > 0:
                 top_vals, _ = th.topk(logits, min(top_k, logits.size(-1)))
-                logits[logits < top_vals[:, -1:]] = float('-inf')
+                logits[logits < top_vals[:, -1:]] = float("-inf")
 
             if top_p < 1.0:
                 sl, si = th.sort(logits, descending=True)
                 cum = th.cumsum(F.softmax(sl, dim=-1), dim=-1)
-                sl[cum - F.softmax(sl, dim=-1) >= top_p] = float('-inf')
+                sl[cum - F.softmax(sl, dim=-1) >= top_p] = float("-inf")
                 logits = th.zeros_like(logits).scatter_(1, si, sl)
 
             next_id = th.multinomial(F.softmax(logits, dim=-1), 1).item()
